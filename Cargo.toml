@@ -1,0 +1,59 @@
+[package]
+name = "drogue-kernel"
+version = "0.1.0"
+authors = ["Bob McWhirter <bmcwhirt@redhat.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+heapless = "0.5.6"
+#log = "0.4.11"
+
+[dependencies.bare-metal]
+version = "0.2.5"
+
+[dependencies.embedded-hal]
+version = "0.2.4"
+features = ["unproven"]
+
+
+
+
+[dev-dependencies.cortex-m-rt]
+version = "0.6"
+#features = ["device"]
+
+[dev-dependencies.cortex-m]
+version = "0.6"
+
+[dev-dependencies.rtt-target]
+version = "0.2.2"
+features = ["cortex-m"]
+
+[dev-dependencies.rtt-logger]
+version = "0.1.0"
+
+[dev-dependencies.stm32l4xx-hal]
+path = "../stm32l4xx-hal"
+features = ["stm32l4x5" ]
+
+[dev-dependencies.stm32l4]
+version = "0.12.1"
+
+[dev-dependencies.panic-rtt-target]
+version = "0.1.1"
+features = ["cortex-m"]
+
+[dev-dependencies.log]
+version = "0.4.11"
+
+
+
+
+
+
+
+
+[[example]]
+name = "blinky"
