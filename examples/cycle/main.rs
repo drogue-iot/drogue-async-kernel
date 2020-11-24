@@ -2,10 +2,10 @@
 #![no_main]
 
 mod b1;
+mod cycler;
 mod ld1;
 mod ld2;
 mod logger;
-mod cycler;
 
 extern crate cortex_m_rt as rt;
 extern crate panic_rtt_target;
@@ -29,12 +29,12 @@ static LOGGER: RTTLogger = RTTLogger::new(LevelFilter::Debug);
 use drogue_kernel::{button::Button, kernel, led::LED, Actor};
 
 use crate::b1::{B1IrqHandler, B1};
+use crate::cycler::Cycler;
 use crate::ld1::LD1;
 use crate::ld2::LD2;
 use crate::logger::Logger;
-use drogue_kernel::led::{ActiveHigh, InitialInactive};
-use crate::cycler::Cycler;
 use drogue_kernel::event::Optional;
+use drogue_kernel::led::{ActiveHigh, InitialInactive};
 
 #[derive(Copy, Clone, Debug)]
 pub enum Cycle {
@@ -51,7 +51,7 @@ pub enum AppEvent {
 
 impl Optional for AppEvent {
     fn is_none(&self) -> bool {
-        matches!( self, AppEvent::None)
+        matches!(self, AppEvent::None)
     }
 }
 
@@ -110,4 +110,3 @@ fn main() -> ! {
         Cycler::new(),
     );
 }
-

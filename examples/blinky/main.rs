@@ -42,7 +42,7 @@ pub enum AppEvent {
 
 impl Optional for AppEvent {
     fn is_none(&self) -> bool {
-        matches!( self, AppEvent::None)
+        matches!(self, AppEvent::None)
     }
 }
 
@@ -54,7 +54,6 @@ kernel! {
         ld2: LED<LD2, ActiveHigh, InitialActive>,
     }
 }
-
 
 #[entry]
 fn main() -> ! {
@@ -93,11 +92,5 @@ fn main() -> ! {
         .pb14
         .into_push_pull_output(&mut gpiob.moder, &mut gpiob.otyper);
 
-    App::start(
-        Logger,
-        Button::new(b1),
-        LED::new(ld1),
-        LED::new(ld2),
-    );
+    App::start(Logger, Button::new(b1), LED::new(ld1), LED::new(ld2));
 }
-

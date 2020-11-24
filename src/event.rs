@@ -1,6 +1,5 @@
 use core::fmt::Debug;
 
-
 /// Marker trait to allow for application events to denote a `None` variant
 /// since orphan rules prevent `Into`/`From` for `Option<T>` even if `T` is
 /// local to the crate.
@@ -8,7 +7,6 @@ pub trait Optional {
     /// Determine if this event variant is equivalent to `None`
     fn is_none(&self) -> bool;
 }
-
 
 /// An event to be handled.
 ///

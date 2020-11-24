@@ -7,7 +7,6 @@ use bare_metal::Nr;
 /// `Actor` may be paired with an `InterruptHandler<_,_>` for a complete,
 /// interrupt-driven component.
 pub trait Actor {
-
     /// The type of event this actor work in terms of.
     type Event;
 
@@ -22,7 +21,6 @@ pub trait Actor {
 /// an actor, in order to perform platform-specific interrupt
 /// checking and clearing.
 pub trait InterruptHandler<C: Actor, Irq: Nr + Copy> {
-
     /// The interrupt line associated with this handler.
     /// Given that several semantic interrupts may be linked
     /// to a given line (EXTI for instance), further checking

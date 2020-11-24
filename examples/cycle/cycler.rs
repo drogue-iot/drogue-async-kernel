@@ -1,6 +1,6 @@
-use drogue_kernel::{Actor, Event, KernelEvent};
 use crate::{App, AppEvent, Cycle};
 use drogue_kernel::kernel::Kernel;
+use drogue_kernel::{Actor, Event, KernelEvent};
 
 pub enum CycleEvent {
     Next,
@@ -29,18 +29,13 @@ impl Actor for Cycler {
             }
             Event::Actor(CycleEvent::Next) => {
                 match self.cycle {
-                    Cycle::First => {
-                        self.cycle = Cycle::Second
-                    }
-                    Cycle::Second => {
-                        self.cycle = Cycle::First
-                    }
+                    Cycle::First => self.cycle = Cycle::Second,
+                    Cycle::Second => self.cycle = Cycle::First,
                 }
                 App::dispatch_event(CycleEvent::Set(self.cycle).into());
             }
             _ => {}
         }
-
     }
 }
 
@@ -56,10 +51,8 @@ impl From<&AppEvent> for Option<CycleEvent> {
 impl From<CycleEvent> for AppEvent {
     fn from(event: CycleEvent) -> Self {
         match event {
-            CycleEvent::Next => { AppEvent::None }
-            CycleEvent::Set(cycle) => {
-                AppEvent::Cycle(cycle)
-            }
+            CycleEvent::Next => AppEvent::None,
+            CycleEvent::Set(cycle) => AppEvent::Cycle(cycle),
         }
     }
 }

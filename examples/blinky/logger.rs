@@ -14,7 +14,6 @@ impl Actor for Logger {
     }
 }
 
-
 impl From<&AppEvent> for Option<LogEvent> {
     fn from(event: &AppEvent) -> Self {
         Some(LogEvent(*event))
