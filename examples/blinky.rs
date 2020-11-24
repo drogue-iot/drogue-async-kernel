@@ -42,7 +42,7 @@ pub enum AppEvent {
 kernel! {
     App<AppEvent> {
         logger: Logger,
-        button: Button<B1, App> => B1IrqHandler,
+        b1: Button<B1, App> => B1IrqHandler,
         ld1: LED<LD1, ActiveHigh, InitialActive>,
         ld2: LED<LD2, ActiveHigh, InitialInactive>,
     }
@@ -83,8 +83,6 @@ fn main() -> ! {
     b1.enable_interrupt(&mut device.EXTI);
     b1.trigger_on_edge(&mut device.EXTI, Edge::RISING_FALLING);
 
-    let b1 = Button::new(b1);
-
     let ld1 = gpioa
         .pa5
         .into_push_pull_output(&mut gpioa.moder, &mut gpioa.otyper);
@@ -93,11 +91,11 @@ fn main() -> ! {
         .pb14
         .into_push_pull_output(&mut gpiob.moder, &mut gpiob.otyper);
 
-    let ld1 = LED::new(ld1);
-    let ld2 = LED::new(ld2);
-
-    let logger = Logger {};
-
-    App::start(logger, b1, ld1, ld2);
+    App::start(
+        Logger,
+        Button::new(b1),
+        LED::new(ld1),
+        LED::new(ld2),
+    );
 }
 
