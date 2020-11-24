@@ -18,7 +18,9 @@ version = "0.2.4"
 features = ["unproven"]
 
 
-
+##
+## Example dependencies
+##
 
 [dev-dependencies.cortex-m-rt]
 version = "0.6"
@@ -48,12 +50,12 @@ features = ["cortex-m"]
 [dev-dependencies.log]
 version = "0.4.11"
 
-
-
-
-
-
-
+##
+## Examples
+##
 
 [[example]]
 name = "blinky"
+
+[[example]]
+name = "cycle"

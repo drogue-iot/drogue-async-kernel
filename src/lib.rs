@@ -9,7 +9,7 @@ pub mod kernel;
 pub mod led;
 
 pub use actor::{Actor, InterruptHandler};
-pub use event::{Event, KernelEvent};
+pub use event::{Event, KernelEvent, Optional};
 
 pub extern crate heapless;
 

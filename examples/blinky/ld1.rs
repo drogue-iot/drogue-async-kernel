@@ -10,6 +10,7 @@ impl From<&AppEvent> for Option<LEDEvent<LD1>> {
         match event {
             AppEvent::StartAlert => Some(LEDEvent::on()),
             AppEvent::StopAlert => Some(LEDEvent::off()),
+            _ => None,
         }
     }
 }

@@ -1,7 +1,9 @@
-pub trait Kernel {
-    type Event;
+use crate::event::Optional;
 
-    fn dispatch(event: Self::Event);
+pub trait Kernel {
+    type Event: Optional;
+
+    fn dispatch_event(event: Self::Event);
 }
 
 #[macro_export]
@@ -21,6 +23,7 @@ macro_rules! kernel {
                     $name: $ty,
                 )*
             ) -> ! {
+                log::info!("A");
                 let mut kernel = Self {
                     event_queue: $crate::heapless::spsc::Queue::new(),
                     $(
@@ -30,6 +33,7 @@ macro_rules! kernel {
 
                 use $crate::actor::InterruptHandler;
 
+                log::info!("B");
                 unsafe {
                     $(
                         kernel.$name.process(
@@ -45,13 +49,14 @@ macro_rules! kernel {
                     )*
                 }
 
+                log::info!("C");
                 loop {
                     $kernel::event_loop();
                 }
             }
 
             unsafe fn get() -> &'static mut Self {
-                KERNEL.as_mut().unwrap()
+                KERNEL.as_mut().expect("unable to obtain kernel")
             }
 
             $(
@@ -67,8 +72,10 @@ macro_rules! kernel {
             fn run_event_loop(&mut self) {
                 while let Some($crate::event::Event::Actor(ref event)) = self.event_queue.dequeue() {
                     $(
-                        if let Some(actor_event) = event.into() {
-                            self.$name.process( $crate::event::Event::Actor(actor_event) );
+                        if ! event.is_none() {
+                            if let Some(actor_event) = event.into() {
+                                self.$name.process( $crate::event::Event::Actor(actor_event) );
+                            }
                         }
                     )*
                 }
@@ -85,7 +92,7 @@ macro_rules! kernel {
         impl $crate::kernel::Kernel for $kernel {
             type Event = $event;
 
-            fn dispatch(event: Self::Event) {
+            fn dispatch_event(event: Self::Event) {
                 unsafe {
                     Self::get().dispatch($crate::event::Event::Actor(event));
                 }

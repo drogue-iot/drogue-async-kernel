@@ -43,11 +43,11 @@ where
     }
 
     pub fn press(&self) {
-        K::dispatch(ButtonEvent::<PIN>::down().into());
+        K::dispatch_event(ButtonEvent::<PIN>::down().into());
     }
 
     pub fn release(&self) {
-        K::dispatch(ButtonEvent::<PIN>::up().into());
+        K::dispatch_event(ButtonEvent::<PIN>::up().into());
     }
 }
 

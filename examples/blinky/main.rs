@@ -25,7 +25,7 @@ use stm32l4xx_hal::rcc::RccExt;
 
 static LOGGER: RTTLogger = RTTLogger::new(LevelFilter::Debug);
 
-use drogue_kernel::{button::Button, kernel, led::LED, Actor};
+use drogue_kernel::{button::Button, kernel, led::LED, Actor, Optional};
 
 use crate::b1::{B1IrqHandler, B1};
 use crate::ld1::LD1;
@@ -35,24 +35,26 @@ use drogue_kernel::led::{ActiveHigh, InitialActive, InitialInactive};
 
 #[derive(Copy, Clone, Debug)]
 pub enum AppEvent {
+    None,
     StartAlert,
     StopAlert,
+}
+
+impl Optional for AppEvent {
+    fn is_none(&self) -> bool {
+        matches!( self, AppEvent::None)
+    }
 }
 
 kernel! {
     App<AppEvent> {
         logger: Logger,
         b1: Button<B1, App> => B1IrqHandler,
-        ld1: LED<LD1, ActiveHigh, InitialActive>,
-        ld2: LED<LD2, ActiveHigh, InitialInactive>,
+        ld1: LED<LD1, ActiveHigh, InitialInactive>,
+        ld2: LED<LD2, ActiveHigh, InitialActive>,
     }
 }
 
-impl From<&AppEvent> for Option<AppEvent> {
-    fn from(event: &AppEvent) -> Self {
-        Some(*event)
-    }
-}
 
 #[entry]
 fn main() -> ! {
