@@ -8,7 +8,6 @@ edition = "2018"
 
 [dependencies]
 heapless = "0.5.6"
-#log = "0.4.11"
 
 [dependencies.bare-metal]
 version = "0.2.5"
@@ -16,7 +15,6 @@ version = "0.2.5"
 [dependencies.embedded-hal]
 version = "0.2.4"
 features = ["unproven"]
-
 
 ##
 ## Example dependencies
