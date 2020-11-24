@@ -23,7 +23,6 @@ macro_rules! kernel {
                     $name: $ty,
                 )*
             ) -> ! {
-                log::info!("A");
                 let mut kernel = Self {
                     event_queue: $crate::heapless::spsc::Queue::new(),
                     $(
@@ -33,15 +32,11 @@ macro_rules! kernel {
 
                 use $crate::actor::InterruptHandler;
 
-                log::info!("B");
                 unsafe {
-                    $(
-                        kernel.$name.process(
-                            $crate::Event::Kernel($crate::KernelEvent::Initialize)
-                        );
-
-                    )*
                     KERNEL.replace(kernel);
+                    $kernel::get().dispatch($crate::Event::Kernel($crate::KernelEvent::Initialize));
+                    // loop once to allow the initialization to occur prior to enabling interrupts.
+                    $kernel::event_loop();
                     $(
                         $(
                             cortex_m::peripheral::NVIC::unmask( <$irq>::IRQ );
@@ -49,7 +44,6 @@ macro_rules! kernel {
                     )*
                 }
 
-                log::info!("C");
                 loop {
                     $kernel::event_loop();
                 }
@@ -70,14 +64,23 @@ macro_rules! kernel {
             }
 
             fn run_event_loop(&mut self) {
-                while let Some($crate::event::Event::Actor(ref event)) = self.event_queue.dequeue() {
-                    $(
-                        if ! event.is_none() {
-                            if let Some(actor_event) = event.into() {
-                                self.$name.process( $crate::event::Event::Actor(actor_event) );
+                while let Some(event) = self.event_queue.dequeue() {
+                    match event {
+                        $crate::Event::Kernel(kernel_event) => {
+                            $(
+                                self.$name.process( $crate::Event::Kernel(kernel_event));
+                            )*
+                        }
+                        $crate::Event::Actor(ref app_event) => {
+                            if ! app_event.is_none() {
+                                $(
+                                    if let Some(actor_event) = app_event.into() {
+                                        self.$name.process( $crate::Event::Actor(actor_event) );
+                                    }
+                                )*
                             }
                         }
-                    )*
+                    }
                 }
             }
 
@@ -93,6 +96,9 @@ macro_rules! kernel {
             type Event = $event;
 
             fn dispatch_event(event: Self::Event) {
+                if event.is_none() {
+                    return
+                }
                 unsafe {
                     Self::get().dispatch($crate::event::Event::Actor(event));
                 }

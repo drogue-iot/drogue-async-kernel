@@ -32,7 +32,7 @@ use crate::b1::{B1IrqHandler, B1};
 use crate::ld1::LD1;
 use crate::ld2::LD2;
 use crate::logger::Logger;
-use drogue_kernel::led::{ActiveHigh, InitialActive, InitialInactive};
+use drogue_kernel::led::{ActiveHigh, InitialInactive};
 use crate::cycler::Cycler;
 use drogue_kernel::event::Optional;
 
@@ -59,7 +59,7 @@ kernel! {
     App<AppEvent> {
         logger: Logger,
         b1: Button<B1, App> => B1IrqHandler,
-        ld1: LED<LD1, ActiveHigh, InitialActive>,
+        ld1: LED<LD1, ActiveHigh, InitialInactive>,
         ld2: LED<LD2, ActiveHigh, InitialInactive>,
         cycler: Cycler,
     }

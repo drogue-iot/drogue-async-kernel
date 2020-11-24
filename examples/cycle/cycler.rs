@@ -1,4 +1,4 @@
-use drogue_kernel::{Actor, Event};
+use drogue_kernel::{Actor, Event, KernelEvent};
 use crate::{App, AppEvent, Cycle};
 use drogue_kernel::kernel::Kernel;
 
@@ -24,6 +24,9 @@ impl Actor for Cycler {
 
     fn process(&mut self, event: Event<CycleEvent>) {
         match event {
+            Event::Kernel(KernelEvent::Initialize) => {
+                App::dispatch_event(CycleEvent::Set(self.cycle).into());
+            }
             Event::Actor(CycleEvent::Next) => {
                 match self.cycle {
                     Cycle::First => {
