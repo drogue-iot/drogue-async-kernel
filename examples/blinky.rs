@@ -101,12 +101,3 @@ fn main() -> ! {
     App::start(logger, b1, ld1, ld2);
 }
 
-/*
-#[exception]
-unsafe fn DefaultHandler(arg: i16) {
-    // TODO: Differentiate the interrupts....
-    App::button().interrupt();
-    App::button().pin().clear_interrupt_pending_bit();
-}
-
- */
