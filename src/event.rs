@@ -3,7 +3,7 @@ use core::fmt::Debug;
 #[derive(Debug, Copy, Clone)]
 pub enum Event<E> {
     Kernel(KernelEvent),
-    Actor(E)
+    Actor(E),
 }
 
 #[derive(Debug, Copy, Clone)]
@@ -12,4 +12,3 @@ pub enum KernelEvent {
     Start,
     Shutdown,
 }
-

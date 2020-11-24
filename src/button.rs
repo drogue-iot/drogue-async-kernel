@@ -1,8 +1,7 @@
-use crate::kernel::Kernel;
 use crate::actor::Actor;
+use crate::kernel::Kernel;
 use core::marker::PhantomData;
 use embedded_hal::digital::v2::InputPin;
-
 
 pub enum ButtonEvent<PIN: InputPin> {
     Down(PhantomData<PIN>),
@@ -19,18 +18,16 @@ impl<PIN: InputPin> ButtonEvent<PIN> {
     }
 }
 
-pub struct Button<PIN: InputPin, K: Kernel>
-{
+pub struct Button<PIN: InputPin, K: Kernel> {
     pin: PIN,
     _kernel: PhantomData<K>,
 }
 
 impl<PIN: InputPin, K: Kernel> Button<PIN, K>
-    where
-        ButtonEvent<PIN>: Into<K::Event>
+where
+    ButtonEvent<PIN>: Into<K::Event>,
 {
-    pub fn new(pin: PIN) -> Self
-    {
+    pub fn new(pin: PIN) -> Self {
         Self {
             pin,
             _kernel: PhantomData::default(),
@@ -55,8 +52,8 @@ impl<PIN: InputPin, K: Kernel> Button<PIN, K>
 }
 
 impl<PIN: InputPin, K: Kernel> Actor for Button<PIN, K>
-    where
-        ButtonEvent<PIN>: Into<K::Event>
+where
+    ButtonEvent<PIN>: Into<K::Event>,
 {
     type Event = ButtonEvent<PIN>;
 
@@ -68,6 +65,3 @@ impl<PIN: InputPin, K: Kernel> Actor for Button<PIN, K>
         }
     }
 }
-
-
-

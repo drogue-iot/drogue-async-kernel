@@ -9,49 +9,29 @@ mod logger;
 extern crate cortex_m_rt as rt;
 extern crate panic_rtt_target;
 
-use rtt_target::{
-    rtt_init_print,
-};
+use rtt_target::rtt_init_print;
 
-use rtt_logger::RTTLogger;
 use log::LevelFilter;
+use rtt_logger::RTTLogger;
 
-use rt::{
-    entry,
-    exception,
-};
+use rt::{entry, exception};
 
-use stm32l4xx_hal::{
-    self as hal,
-    prelude::*,
-};
+use stm32l4xx_hal::{self as hal, prelude::*};
 
 use stm32l4xx_hal::flash::FlashExt;
-use stm32l4xx_hal::rcc::RccExt;
-use stm32l4xx_hal::pwr::PwrExt;
 use stm32l4xx_hal::gpio::Edge;
+use stm32l4xx_hal::pwr::PwrExt;
+use stm32l4xx_hal::rcc::RccExt;
 
 static LOGGER: RTTLogger = RTTLogger::new(LevelFilter::Debug);
 
-use drogue_kernel::{
-    kernel,
-    Actor,
-    button::{
-        Button,
-    },
-    led::{
-        LED,
-    }
-};
+use drogue_kernel::{button::Button, kernel, led::LED, Actor};
 
-use crate::b1::{
-    B1,
-    B1IrqHandler,
-};
+use crate::b1::{B1IrqHandler, B1};
 use crate::ld1::LD1;
 use crate::ld2::LD2;
 use crate::logger::Logger;
-use drogue_kernel::led::{ActiveHigh, InitialInactive, InitialActive};
+use drogue_kernel::led::{ActiveHigh, InitialActive, InitialInactive};
 
 #[derive(Copy, Clone, Debug)]
 pub enum AppEvent {
@@ -59,7 +39,7 @@ pub enum AppEvent {
     StopAlert,
 }
 
-kernel!{
+kernel! {
     App<AppEvent> {
         logger: Logger,
         button: Button<B1, App> => B1IrqHandler,
@@ -118,11 +98,7 @@ fn main() -> ! {
 
     let logger = Logger {};
 
-    App::start( logger,
-                b1,
-                ld1,
-                ld2
-    );
+    App::start(logger, b1, ld1, ld2);
 }
 
 /*
@@ -134,4 +110,3 @@ unsafe fn DefaultHandler(arg: i16) {
 }
 
  */
-

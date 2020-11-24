@@ -2,20 +2,14 @@
 #![no_std]
 //pub mod app;
 
-pub mod kernel;
-pub mod event;
 pub mod actor;
 pub mod button;
+pub mod event;
+pub mod kernel;
 pub mod led;
 
-pub use event::{
-    Event,
-    KernelEvent,
-};
-pub use actor::{
-    Actor,
-    InterruptHandler,
-};
+pub use actor::{Actor, InterruptHandler};
+pub use event::{Event, KernelEvent};
 
 pub extern crate heapless;
 

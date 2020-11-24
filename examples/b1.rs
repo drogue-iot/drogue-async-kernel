@@ -1,26 +1,19 @@
-use stm32l4xx_hal::gpio::gpioc::PC13;
-use stm32l4xx_hal::gpio::{Input, PullUp, ExtiPin};
-use crate::{AppEvent, App};
+use crate::{App, AppEvent};
 use drogue_kernel::{
+    button::{Button, ButtonEvent},
     InterruptHandler,
-    button::{ButtonEvent, Button}
 };
-use stm32l4xx_hal::pac::Interrupt::{
-    self,
-    EXTI15_10
-};
+use stm32l4xx_hal::gpio::gpioc::PC13;
+use stm32l4xx_hal::gpio::{ExtiPin, Input, PullUp};
+use stm32l4xx_hal::pac::Interrupt::{self, EXTI15_10};
 
 pub type B1 = PC13<Input<PullUp>>;
 
 impl From<ButtonEvent<B1>> for AppEvent {
     fn from(event: ButtonEvent<B1>) -> Self {
         match event {
-            ButtonEvent::Down(_) => {
-                AppEvent::StartAlert
-            }
-            ButtonEvent::Up(_) => {
-                AppEvent::StopAlert
-            }
+            ButtonEvent::Down(_) => AppEvent::StartAlert,
+            ButtonEvent::Up(_) => AppEvent::StopAlert,
         }
     }
 }
@@ -44,5 +37,3 @@ impl InterruptHandler<Button<B1, App>, Interrupt> for B1IrqHandler {
         component.pin_mut().clear_interrupt_pending_bit()
     }
 }
-
-
