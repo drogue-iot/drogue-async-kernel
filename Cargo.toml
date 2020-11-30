@@ -1,5 +1,5 @@
 [package]
-name = "drogue-kernel"
+name = "drogue-async-kernel"
 version = "0.1.0"
 authors = ["Bob McWhirter <bmcwhirt@redhat.com>"]
 edition = "2018"
@@ -15,6 +15,19 @@ version = "0.2.5"
 [dependencies.embedded-hal]
 version = "0.2.4"
 features = ["unproven"]
+
+[dependencies.async-embedded]
+path = "../async-on-embedded/async-embedded"
+
+[dependencies.log]
+version = "0.4.11"
+
+[dependencies.cortex-m-rt]
+version = "0.6"
+#features = ["device"]
+
+[dependencies.cortex-m]
+version = "0.6"
 
 ##
 ## Example dependencies
@@ -55,5 +68,8 @@ version = "0.4.11"
 [[example]]
 name = "blinky"
 
-[[example]]
-name = "cycle"
+[profile.release]
+opt-level = "s"
+
+#[[example]]
+#name = "cycle"

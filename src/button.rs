@@ -1,36 +1,50 @@
-use crate::actor::Actor;
-use crate::kernel::Kernel;
-use core::marker::PhantomData;
 use embedded_hal::digital::v2::InputPin;
 
-pub enum ButtonEvent<PIN: InputPin> {
-    Down(PhantomData<PIN>),
-    Up(PhantomData<PIN>),
+use heapless::{
+    String,
+    consts::*
+};
+use crate::kernel::Kernel;
+use core::marker::PhantomData;
+
+pub enum ButtonEvent<Discriminant> {
+    Down(PhantomData<Discriminant>),
+    Up(PhantomData<Discriminant>)
 }
 
-impl<PIN: InputPin> ButtonEvent<PIN> {
+impl<Discriminant> ButtonEvent<Discriminant> {
+
     pub fn down() -> Self {
-        Self::Down(PhantomData::default())
+        ButtonEvent::Down(PhantomData::default())
     }
 
     pub fn up() -> Self {
-        Self::Up(PhantomData::default())
+        ButtonEvent::Up(PhantomData::default())
     }
 }
 
-pub struct Button<PIN: InputPin, K: Kernel> {
+pub struct Button<PIN: InputPin, KERNEL: Kernel> {
     pin: PIN,
-    _kernel: PhantomData<K>,
+    name: String<U16>,
+    _kernel: PhantomData<KERNEL>
 }
 
-impl<PIN: InputPin, K: Kernel> Button<PIN, K>
-where
-    ButtonEvent<PIN>: Into<K::Event>,
+impl<PIN: InputPin, KERNEL: Kernel> Button<PIN, KERNEL>
+    where KERNEL::Event: From<ButtonEvent<PIN>>
 {
-    pub fn new(pin: PIN) -> Self {
+    pub fn new(pin: PIN, name: &str) -> Self {
         Self {
             pin,
+            name: name.into(),
             _kernel: PhantomData::default(),
+        }
+    }
+
+    pub fn on_interrupt(&mut self) {
+        if self.pin.is_low().unwrap_or(false) {
+            KERNEL::dispatch( ButtonEvent::down().into())
+        } else {
+            KERNEL::dispatch( ButtonEvent::up().into())
         }
     }
 
@@ -40,28 +54,6 @@ where
 
     pub fn pin_mut(&mut self) -> &mut PIN {
         &mut self.pin
-    }
 
-    pub fn press(&self) {
-        K::dispatch_event(ButtonEvent::<PIN>::down().into());
-    }
-
-    pub fn release(&self) {
-        K::dispatch_event(ButtonEvent::<PIN>::up().into());
-    }
-}
-
-impl<PIN: InputPin, K: Kernel> Actor for Button<PIN, K>
-where
-    ButtonEvent<PIN>: Into<K::Event>,
-{
-    type Event = ButtonEvent<PIN>;
-
-    fn interrupt(&mut self) {
-        if self.pin.is_high().unwrap_or(false) {
-            self.release();
-        } else {
-            self.press();
-        }
     }
 }

@@ -1,39 +1,42 @@
-use crate::{App, AppEvent};
-use drogue_kernel::{
-    button::{Button, ButtonEvent},
-    InterruptHandler,
-};
-use stm32l4xx_hal::gpio::gpioc::PC13;
-use stm32l4xx_hal::gpio::{ExtiPin, Input, PullUp};
-use stm32l4xx_hal::pac::Interrupt::{self, EXTI15_10};
+use stm32l4xx_hal::gpio::{PC13, Input, PullUp, ExtiPin};
+use drogue_async_kernel::button::{ButtonEvent, Button};
+use crate::app_kernel::{AppEvent, AppKernel};
+use stm32l4::stm32l4x5::Interrupt::EXTI15_10;
+use cortex_m::interrupt::Nr;
 
 pub type B1 = PC13<Input<PullUp>>;
 
 impl From<ButtonEvent<B1>> for AppEvent {
     fn from(event: ButtonEvent<B1>) -> Self {
         match event {
-            ButtonEvent::Down(_) => AppEvent::StartAlert,
-            ButtonEvent::Up(_) => AppEvent::StopAlert,
+            ButtonEvent::Down(_) => {
+                AppEvent::StartAlert
+            }
+            ButtonEvent::Up(_) => {
+                AppEvent::StopAlert
+            }
         }
     }
 }
 
-impl From<&AppEvent> for Option<ButtonEvent<B1>> {
-    fn from(_event: &AppEvent) -> Self {
-        None
-    }
-}
+pub struct InterruptableB1(pub Button<B1, AppKernel>);
 
-pub struct B1IrqHandler;
+impl InterruptableB1 {
 
-impl InterruptHandler<Button<B1, App>, Interrupt> for B1IrqHandler {
-    const IRQ: Interrupt = EXTI15_10;
-
-    fn check_interrupt(component: &mut Button<B1, App>) -> bool {
-        component.pin_mut().check_interrupt()
+    pub fn on_interrupt(&mut self) {
+        self.0.on_interrupt();
     }
 
-    fn clear_interrupt(component: &mut Button<B1, App>) {
-        component.pin_mut().clear_interrupt_pending_bit()
+    pub fn is_interrupt(&mut self, irqn: i16) -> bool {
+        if EXTI15_10.nr() == irqn as u8 {
+            self.0.pin_mut().check_interrupt()
+        } else {
+            false
+        }
     }
+
+    pub fn clear_interrupt(&mut self) {
+        self.0.pin_mut().clear_interrupt_pending_bit()
+    }
+
 }

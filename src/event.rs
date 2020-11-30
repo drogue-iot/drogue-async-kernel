@@ -26,6 +26,10 @@ pub enum Event<E> {
 pub enum KernelEvent {
     /// Initialization prior to interrupts or the first event-loop.
     Initialize,
+
+    /// Signal that the components may start active processing,
+    /// and interrupts have been enabled.
     Start,
+
     Shutdown,
 }
